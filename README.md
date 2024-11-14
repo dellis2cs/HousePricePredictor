@@ -1,6 +1,6 @@
 # House Price Predictor
 
-This project uses a dataset of different information that goes into the selling price of a house. I trained an ai model using scikit-learn with lasso regression
+In this project, I used a dataset containing various features related to house characteristics to predict the selling price of a house. By applying Lasso Regression with scikit-learn, I developed a predictive model that helps identify which features most impact house prices while reducing the influence of less relevant factors. Lasso is particularly effective here as it not only fits a linear model but also applies regularization, which can shrink coefficients for less impactful features toward zero, enhancing model simplicity and interpretability. This model can be deployed to estimate house prices based on inputs like area, number of bedrooms, presence of a basement, and more.
 
 ## Table of Contents
 - [Technologies Used](#technologies-used)
