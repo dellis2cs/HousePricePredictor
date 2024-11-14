@@ -1,4 +1,5 @@
 import { useState } from "react";
+import '../App.css';
 
 const Form = () => {
   // State to manage loading state
@@ -27,11 +28,27 @@ const Form = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const validateFormData = () => {
+    for (let key in formData) {
+      if (formData[key] === "") {
+        alert(`Please fill in the ${key} field.`);
+        return false;
+      }
+    }
+    return true;
+  };
+
   // Function to handle the 'Predict House Price' button click
   const handlePredictClick = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     setShowSpan(false);
+
+    // Validate all form fields
+    if (!validateFormData()) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:5000/predict", {
@@ -44,6 +61,7 @@ const Form = () => {
 
       const data = await response.json();
       setResult(data.Prediction);
+      console.log(data);
       setShowSpan(true);
     } catch (error) {
       console.error("Error:", error);
@@ -56,15 +74,16 @@ const Form = () => {
 
   return (
     <div className="container text-center mt-4">
-      <h1 className="text-center">House Price Prediction</h1>
+      <h1 className="text-center">House Price Predictor</h1>
       <form onSubmit={handlePredictClick}>
         <label>Area (sq ft):</label>
         <input
-          type="text"
+          type="number"
           name="area"
           value={formData.area}
           onChange={handleChange}
           placeholder="Enter area in sq ft"
+          required
         />
 
         <label>Bedrooms:</label>
@@ -74,6 +93,7 @@ const Form = () => {
           value={formData.bedrooms}
           onChange={handleChange}
           placeholder="Enter number of bedrooms"
+          required
         />
 
         <label>Bathrooms:</label>
@@ -83,6 +103,7 @@ const Form = () => {
           value={formData.bathrooms}
           onChange={handleChange}
           placeholder="Enter number of bathrooms"
+          required
         />
 
         <label>Stories:</label>
@@ -92,58 +113,39 @@ const Form = () => {
           value={formData.stories}
           onChange={handleChange}
           placeholder="Enter number of stories"
+          required
         />
 
         <label>Main Road Access:</label>
-        <select
-          name="mainroad"
-          value={formData.mainroad}
-          onChange={handleChange}
-        >
+        <select name="mainroad" value={formData.mainroad} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="1">Yes</option>
           <option value="0">No</option>
         </select>
 
         <label>Guest Room:</label>
-        <select
-          name="guestroom"
-          value={formData.guestroom}
-          onChange={handleChange}
-        >
+        <select name="guestroom" value={formData.guestroom} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="1">Yes</option>
           <option value="0">No</option>
         </select>
 
         <label>Basement:</label>
-        <select
-          name="basement"
-          value={formData.basement}
-          onChange={handleChange}
-        >
+        <select name="basement" value={formData.basement} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="1">Yes</option>
           <option value="0">No</option>
         </select>
 
         <label>Hot Water Heating:</label>
-        <select
-          name="hotwaterheating"
-          value={formData.hotwaterheating}
-          onChange={handleChange}
-        >
+        <select name="hotwaterheating" value={formData.hotwaterheating} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="1">Yes</option>
           <option value="0">No</option>
         </select>
 
         <label>Air Conditioning:</label>
-        <select
-          name="airconditioning"
-          value={formData.airconditioning}
-          onChange={handleChange}
-        >
+        <select name="airconditioning" value={formData.airconditioning} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="1">Yes</option>
           <option value="0">No</option>
@@ -156,25 +158,18 @@ const Form = () => {
           value={formData.parking}
           onChange={handleChange}
           placeholder="Enter number of parking spaces"
+          required
         />
 
         <label>Preferred Area:</label>
-        <select
-          name="prefarea"
-          value={formData.prefarea}
-          onChange={handleChange}
-        >
+        <select name="prefarea" value={formData.prefarea} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="1">Yes</option>
           <option value="0">No</option>
         </select>
 
         <label>Furnishing Status:</label>
-        <select
-          name="furnishingstatus"
-          value={formData.furnishingstatus}
-          onChange={handleChange}
-        >
+        <select name="furnishingstatus" value={formData.furnishingstatus} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="0">Furnished</option>
           <option value="1">Semi-Furnished</option>

@@ -1,37 +1,40 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 import pickle
 
 app = Flask(__name__)
+CORS(app, resources={r"/predict": {"origins": "*"}})
 
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    return response
+# Load the model
+model = pickle.load(open('ml_model.pkl', 'rb'))
 
-@app.route('/predict', methods=['OPTIONS'])
-def handle_options():
-    response = make_response()
-    return add_cors_headers(response)
+@app.route('/', methods=['GET'])
+def get_data():
+    return jsonify({"message": "API is Running"})
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'OPTIONS'])
 def predict():
+    if request.method == 'OPTIONS':
+        response = jsonify({"status": "CORS preflight check"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        return response
+
     try:
         data = request.get_json()
         query_df = pd.DataFrame([data])
         prediction = model.predict(query_df)
         rounded_prediction = round(prediction[0])
         
-        response = make_response(jsonify({'Prediction': rounded_prediction}))
-        return add_cors_headers(response)
+        response = jsonify({'Prediction': rounded_prediction})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
     except Exception as e:
-        response = make_response(jsonify({'error': str(e)}), 400)
-        return add_cors_headers(response)
-
-# Load the model
-model = pickle.load(open('ml_model.pkl', 'rb'))
+        response = jsonify({'error': str(e)})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
 
 if __name__ == '__main__':
-    # Make sure no other process is using port 5000
     app.run(debug=True, port=5000)
